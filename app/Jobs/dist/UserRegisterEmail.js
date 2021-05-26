@@ -36,53 +36,37 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-var Validator_1 = require("@ioc:Adonis/Core/Validator");
-var Bull_1 = require("@ioc:Rocketseat/Bull");
-var UserRegisterEmail_1 = require("App/Jobs/UserRegisterEmail");
-var User_1 = require("App/Models/User");
-var UsersController = /** @class */ (function () {
-    function UsersController() {
+/*
+|--------------------------------------------------------------------------
+| Job setup
+|--------------------------------------------------------------------------
+|
+| This is the basic setup for creating a job, but you can override
+| some settings.
+|
+| You can get more details by looking at the bullmq documentation.
+| https://docs.bullmq.io/
+*/
+var UserRegisterEmail = /** @class */ (function () {
+    function UserRegisterEmail() {
+        this.key = 'UserRegisterEmail';
     }
-    UsersController.prototype.register = function (_a) {
-        var auth = _a.auth, request = _a.request, response = _a.response;
+    UserRegisterEmail.prototype.onCompleted = function (job, result) {
+        console.log("onCompleted job: ", data);
+    };
+    UserRegisterEmail.prototype.onActive = function (job) {
+        console.log("onActive job: ", job);
+    };
+    UserRegisterEmail.prototype.handle = function (job) {
         return __awaiter(this, void 0, void 0, function () {
-            var validations, data, user, token, e_1;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        validations = Validator_1.schema.create({
-                            full_name: Validator_1.schema.string(),
-                            email: Validator_1.schema.string({}, [Validator_1.rules.email(), Validator_1.rules.unique({ table: 'users', column: 'email' })]),
-                            password: Validator_1.schema.string({}, [Validator_1.rules.confirmed()])
-                        });
-                        _b.label = 1;
-                    case 1:
-                        _b.trys.push([1, 5, , 6]);
-                        return [4 /*yield*/, request.validate({ schema: validations })];
-                    case 2:
-                        data = _b.sent();
-                        return [4 /*yield*/, User_1["default"].create(data)];
-                    case 3:
-                        user = _b.sent();
-                        console.log("user: ", user);
-                        Bull_1["default"].add(new UserRegisterEmail_1["default"]().key, user);
-                        return [4 /*yield*/, auth.attempt(data.email, data.password)];
-                    case 4:
-                        token = _b.sent();
-                        response.status(200).json({
-                            message: 'Signup Successful',
-                            data: token
-                        });
-                        return [3 /*break*/, 6];
-                    case 5:
-                        e_1 = _b.sent();
-                        console.log("user: ", e_1);
-                        return [2 /*return*/, response.badRequest('Invalid credentials')];
-                    case 6: return [2 /*return*/];
-                }
+            var data;
+            return __generator(this, function (_a) {
+                data = job.data;
+                console.log("User data: ", data);
+                return [2 /*return*/];
             });
         });
     };
-    return UsersController;
+    return UserRegisterEmail;
 }());
-exports["default"] = UsersController;
+exports["default"] = UserRegisterEmail;
